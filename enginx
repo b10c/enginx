@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# ENGINX - A script to output common information that is gathered when looking at nginx access logs.
+
+# TO DO: 
+	# Make sure dependencies are installed.
+		# nginx
+		# timegrep.py
+	# Make the interactive/standard switch
+	# Get feedback for functionality
+	# Clean up repeating functions
+	# Lock down the path to access log
+	# Sudo warning
+
+##### Constants
+
+DATE=$(date +"%Y-%m-%d")
+TITLE="NGINX ACCESS LOG INFORMATION FOR $DATE by $USER"
+START_TIME="00:00:00"
+END_TIME="00:00:00"
+IP="127.0.0.1"
+
+##### Functions
+
+get_start_time()
+{
+	echo "Enter the start time in HH:MM:SS 24-Hour format > "
+	read START_TIME
+}
+
+get_end_time()
+{
+	echo "Enter the end time in HH:MM:SS 24-Hour format > "
+	read END_TIME
+}
+
+current_date()
+{
+	response=
+	echo "Use today's date? (y/n) > "
+	read response
+	if [ "$response" != "y" ]; then
+		echo "Enter the date in YYYY-MM-DD format: "
+		read DATE
+	fi
+}
+
+get_status()
+{
+	echo "NGINX SERVICE STATUS > "
+	service nginx status
+}
+
+get_ip_count()
+{
+	echo "UNIQUE IP COUNT PER TIME PERIOD."
+	find . -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $1}' | sort | uniq -c | sort -rn | head -20
+}
+
+get_http_methods_count()
+{
+	echo "UNIQUE HTTP METHOD COUNT PER PERIOD."
+	find . -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $6}' | sort | uniq -c | sort -rn | head -20
+}
+
+get_requests_count()
+{
+	echo "UNIQUE REQUESTS PER PERIOD."
+	find . -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $7}' | sort | uniq -c | sort -rn | head -20
+}
+
+get_ip_specific_info()
+{
+	echo "Enter IP to target > "
+	read IP
+	echo "Using ipaddr: $IP"
+	find . -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
+}
+
+usage()
+{
+	echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
+}
+
+##### Main
+
+echo $TITLE
+
+get_start_time
+get_end_time
+current_date
+
+
+selection=
+until [ "$selection" = "0" ]; do
+	echo "
+	+---------------------------------------------------------------+
+	|		ENGINX INTERACTIVE MENU				|
+	|---------------------------------------------------------------|
+	|	1 - Display nginx service status			|
+	|	2 - Get unique IP count per time range			|
+	|	3 - Get count of unique HTTP methods per time range	|
+	|	4 - Get count of unique requests per time range		|
+	|	5 - Get IP specific information				|
+	|								|
+	|	0 - Exit						|
+	+---------------------------------------------------------------+
+	"
+
+	echo -n "Enter selection: "
+	read selection
+	echo ""
+
+	case $selection in
+		1 ) get_status ;;
+		2 ) get_ip_count ;;
+		3 ) get_http_methods_count ;;
+		4 ) get_requests_count ;;
+		5 ) get_ip_specific_info ;;
+		0 ) exit ;;
+		* ) usage ;;
+	esac
+done

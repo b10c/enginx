@@ -20,6 +20,7 @@
 	# Better time defaults (+/- 3 Hrs)
 	# Comment code
 	# Clean exits
+	# Create better usage menu
 
 ##### Constants
 
@@ -30,112 +31,121 @@ END_TIME="00:00:00"
 IP="127.0.0.1"
 NGINX="/etc/init.d/nginx"
 TIMEGREP="/usr/local/bin/timegrep"
+
 ##### Functions
+
+root_check()
+{
+  if [ $EUID != 0 ]; then
+    echo -e "Please run as root..."
+    exit
+  fi
+}
 
 warning()
 {
-	echo -e "\n********************** WARNING **********************"
-	echo -e "If not run as root, directory access might be denied."
-	echo -e "*****************************************************"
-	echo -e "$TITLE\n"
+  echo -e "\n********************** WARNING **********************"
+  echo -e "If not run as root, directory access might be denied."
+  echo -e "*****************************************************"
+  echo -e "$TITLE\n"
 }
 
 nginx_dependency()
 {
-	echo -e "Checking if nginx is installed..."
-	if [ -f $NGINX ]; then
-		echo -e "Nginx is Installed!"
-	else
-		echo -e "Nginx is not installed! Exiting..."
-		exit
-	fi
+  echo -e "Checking if nginx is installed..."
+  if [ -f $NGINX ]; then
+    echo -e "Nginx is Installed!"
+  else
+    echo -e "Nginx is not installed! Exiting..."
+    exit
+  fi
 }
 
 timegrep_dependency()
 {
-	echo -e "Checking if timegrep is installed..."
-	if [ -f $TIMEGREP ]; then
-		echo -e "Timegrep is Installed!"
-	else
-		echo -e "Timegrep is not installed! 'sudo pip install timegrep' to install. Exiting..."
-		exit
-	fi
+  echo -e "Checking if timegrep is installed..."
+  if [ -f $TIMEGREP ]; then
+    echo -e "Timegrep is Installed!"
+  else
+    echo -e "Timegrep is not installed! 'sudo pip install timegrep' to install. Exiting..."
+    exit
+  fi
 }
 
 start_time()
 {
-	echo -e "Enter the start time in HH:MM:SS 24-Hour format > \c"
-	read START_TIME
+  echo -e "Enter the start time in HH:MM:SS 24-Hour format > \c"
+  read START_TIME
 }
 
 end_time()
 {
-	echo -e "Enter the end time in HH:MM:SS 24-Hour format > \c"
-	read END_TIME
+  echo -e "Enter the end time in HH:MM:SS 24-Hour format > \c"
+  read END_TIME
 }
 
 current_date()
 {
-	echo -e "Use today's date? (y/n) > \c"
-	read response
-	if [ "$response" != "y" ]; then
-		echo -e "Enter the date in YYYY-MM-DD format > \c"
-		read DATE
-	fi
+  echo -e "Use today's date? (y/n) > \c"
+  read response
+  if [ "$response" != "y" ]; then
+    echo -e "Enter the date in YYYY-MM-DD format > \c"
+    read DATE
+  fi
 }
 
 nginx_status()
 {
-	echo "NGINX SERVICE STATUS > "
-	service nginx status
+  echo "NGINX SERVICE STATUS > "
+  service nginx status
 }
 
 ip_count()
 {
-	echo "UNIQUE IP COUNT PER TIME PERIOD."
-	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $1}' | sort | uniq -c | sort -rn | head -20
+  echo "UNIQUE IP COUNT PER TIME PERIOD."
+  find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $1}' | sort | uniq -c | sort -rn | head -20
 }
 
 http_methods_count()
 {
-	echo "UNIQUE HTTP METHOD COUNT PER PERIOD."
-	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $6}' | sort | uniq -c | sort -rn | head -20
+  echo "UNIQUE HTTP METHOD COUNT PER PERIOD."
+  find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $6}' | sort | uniq -c | sort -rn | head -20
 }
 
 requests_count()
 {
-	echo "UNIQUE REQUESTS PER PERIOD."
-	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $7}' | sort | uniq -c | sort -rn | head -20
+  echo "UNIQUE REQUESTS PER PERIOD."
+  find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | awk '{print $7}' | sort | uniq -c | sort -rn | head -20
 }
 
 ip_specific_info()
 {
-	echo -e "Enter IP to target > \c"
-	read IP
-	echo "Using ipaddr: $IP"
-	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
+  echo -e "Enter IP to target > \c"
+  read IP
+  echo "Using ipaddr: $IP"
+  find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
 }
 
 ip_specific_non_inter()
 {
-	echo -e "Using ipaddr: $IP"
-	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
+  echo -e "Using ipaddr: $IP"
+  find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
 }
 
 usage()
 {
-	echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
+  echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
 }
 
 interactive_mode()
 {
-start_time
-end_time
-current_date
+  start_time
+  end_time
+  current_date
 
-selection=
-until [ "$selection" = "0" ]; do
-echo "
+  selection=
+  until [ "$selection" = "0" ]; do
+    echo "
 +---------------------------------------------------------------+
 |               ENGINX INTERACTIVE MENU                         |
 |---------------------------------------------------------------|
@@ -148,60 +158,62 @@ echo "
 |       0 - Exit                                                |
 +---------------------------------------------------------------+
 "
-echo -e "Enter selection > \c"
-read selection
-echo ""
-case $selection in
-	1 ) nginx_status ;;
-	2 ) ip_count ;;
-	3 ) http_methods_count ;;
-	4 ) requests_count ;;
-	5 ) ip_specific_info ;;
-	0 ) exit ;;
-	* ) usage ;;
-esac
-done
+    echo -e "Enter selection > \c"
+    read selection
+    echo ""
+    case $selection in
+      1 ) nginx_status ;;
+      2 ) ip_count ;;
+      3 ) http_methods_count ;;
+      4 ) requests_count ;;
+      5 ) ip_specific_info ;;
+      0 ) exit ;;
+      * ) usage ;;
+    esac
+  done
 }
 
 ##### Main
 
 #nginx_dependency
-timegrep_dependency
-warning
+#timegrep_dependency
+#warning
+root_check
 
 while [ "$1" != "" ]; do
-	case $1 in
-		-I | --interactive )	interactive_mode ;;
-		-i )			shift
-					START_TIME=$1
-					END_TIME=$2
-					DATE=$3
-					ip_count ;;
+  case $1 in
+    -I | --interactive )      interactive_mode ;;
+    -i )                      shift
+                              START_TIME=$1
+                              END_TIME=$2
+                              DATE=$3
+                              ip_count ;;
 
-		-m )			shift
-					START_TIME=$1
-					END_TIME=$2
-					DATE=$3
-					http_methods_count ;;
-		-r )			shift
-					START_TIME=$1
-					END_TIME=$2
-					DATE=$3
-					requests_count ;;
+    -m )                      shift
+                              START_TIME=$1
+                              END_TIME=$2
+                              DATE=$3
+                              http_methods_count ;;
 
-		-is )			shift
-					START_TIME=$1
-					END_TIME=$2
-					IP=$3
-					DATE=$4
-					ip_specific_non_inter ;;
+    -r )                      shift
+                              START_TIME=$1
+                              END_TIME=$2
+                              DATE=$3
+                              requests_count ;;
 
-		-s | --status )		nginx_status ;;
-		-h | --help )		usage
-					exit
-					;;
-	#	* )			usage
-	#				exit 1
-	esac
-	shift
+    -is )                     shift
+                              START_TIME=$1
+                              END_TIME=$2
+                              IP=$3
+                              DATE=$4
+                              ip_specific_non_inter ;;
+
+    -s | --status )           nginx_status ;;
+    -h | --help )             usage
+                              exit
+                              ;;
+#     * )                     usage
+#                             exit 1
+  esac
+  shift
 done

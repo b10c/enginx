@@ -3,20 +3,9 @@
 # ENGINX - A script to output common information that is gathered when looking at nginx access logs.
 
 # TO DO: 
-	# Make the interactive/standard switch <- DONE
-		# Set up shift arguments for for non-ineracive menu <- DONE
-			# IP count <- DONE
-			# Other counts <- DONE
-			# IP specific <- DONE
-		# Improve shift arguments and workflow
+	# Improve shift arguments and workflow
 	# Get feedback for functionality
 	# Clean up repeating functions
-	# Lock down the path to access log <- DONE
-	# Sudo warning <- DONE
-		# Make this a check. <- DONE
-	# Better time defaults (+/- 3 Hrs) <- DONE
-	# Comment code <- DONE
-	# Clean exits <- DONE
 	# Create better usage menu
 
 ##### Constants

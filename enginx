@@ -18,6 +18,7 @@
 		# Make this a check.
 	# Better time defaults (+/- 3 Hrs)
 	# Comment code
+	# Clean exits
 
 ##### Constants
 
@@ -114,6 +115,12 @@ ip_specific_info()
 	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
 }
 
+ip_specific_non_inter()
+{
+	echo -e "Using ipaddr: $IP"
+	find /home/b10c/qa_access_logs/ -type f -name '*.access.log' -exec /usr/local/bin/timegrep -d $DATE --start-time=$START_TIME --end-time=$END_TIME '{}' \; | grep $IP
+}
+
 usage()
 {
 	echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
@@ -163,12 +170,37 @@ warning
 
 while [ "$1" != "" ]; do
 	case $1 in
-		-i | --interactive )	interactive_mode ;;
+		-I | --interactive )	interactive_mode ;;
+		-i )			shift
+					START_TIME=$1
+					END_TIME=$2
+					DATE=$3
+					ip_count ;;
+
+		-m )			shift
+					START_TIME=$1
+					END_TIME=$2
+					DATE=$3
+					http_methods_count ;;
+		-r )			shift
+					START_TIME=$1
+					END_TIME=$2
+					DATE=$3
+					requests_count ;;
+
+		-is )			shift
+					START_TIME=$1
+					END_TIME=$2
+					IP=$3
+					DATE=$4
+					ip_specific_non_inter ;;
+
+		-s | --status )		nginx_status ;;
 		-h | --help )		usage
 					exit
 					;;
-		* )			usage
-					exit 1
+	#	* )			usage
+	#				exit 1
 	esac
 	shift
 done

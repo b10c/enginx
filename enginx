@@ -16,7 +16,7 @@
 		# Make this a check.
 	# Better time defaults (+/- 3 Hrs)
 	# Comment code
-	# Clean exits
+	# Clean exits <- DONE
 	# Create better usage menu
 
 ##### Constants
@@ -39,13 +39,13 @@ root_check()
   fi
 }
 
-warning()
+control_c()
 {
-  echo -e "\n********************** WARNING **********************"
-  echo -e "If not run as root, directory access might be denied."
-  echo -e "*****************************************************"
-  echo -e "$TITLE\n"
+  echo -en "\nGoodbye.\n"
+  exit $?
 }
+
+trap control_c SIGINT
 
 nginx_dependency()
 {

@@ -23,8 +23,8 @@
 
 DATE=$(date +"%Y-%m-%d")
 TITLE="NGINX ACCESS LOG INFORMATION FOR $DATE by $USER"
-START_TIME="00:00:00"
-END_TIME="00:00:00"
+START_TIME=$(date -d 'now - 3 hours' +%T)
+END_TIME=$(date +"%T")
 IP="127.0.0.1"
 NGINX="/etc/init.d/nginx"
 TIMEGREP="/usr/local/bin/timegrep"

@@ -3,9 +3,6 @@
 # ENGINX - A script to output common information that is gathered when looking at nginx access logs.
 
 # TO DO: 
-	# Make sure dependencies are installed. <- DONE
-		# nginx <- DONE
-		# timegrep.py <- DONE
 	# Make the interactive/standard switch <- DONE
 		# Set up shift arguments for for non-ineracive menu <- DONE
 			# IP count <- DONE

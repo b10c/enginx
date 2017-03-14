@@ -6,11 +6,12 @@
 	# Make sure dependencies are installed. <- DONE
 		# nginx <- DONE
 		# timegrep.py <- DONE
-	# Make the interactive/standard switch
-		# Set up shift arguments for for non-ineracive menu
-			# IP count
-			# Other counts
-			# IP specific
+	# Make the interactive/standard switch <- DONE
+		# Set up shift arguments for for non-ineracive menu <- DONE
+			# IP count <- DONE
+			# Other counts <- DONE
+			# IP specific <- DONE
+		# Improve shift arguments and workflow
 	# Get feedback for functionality
 	# Clean up repeating functions
 	# Lock down the path to access log <- DONE

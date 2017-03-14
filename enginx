@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# ENGINX - A script to output common information that is gathered when looking at nginx access logs.
-
-# TO DO: 
-	# Improve shift arguments and workflow
-	# Get feedback for functionality
-	# Clean up repeating functions
-	# Create better usage menu
+# ENGINX - A tool to output common information that is gathered when looking at nginx access logs.
 
 ##### Constants
 
@@ -41,10 +35,7 @@ trap control_c SIGINT
 # Verifies nginx dependency.
 nginx_dependency()
 {
-  echo -e "Checking if nginx is installed..."
-  if [ -f $NGINX ]; then
-    echo -e "Nginx is Installed!"
-  else
+  if [ -f !$NGINX ]; then
     echo -e "Nginx is not installed! Exiting..."
     exit
   fi
@@ -53,10 +44,7 @@ nginx_dependency()
 # Verifies timegrep dependency.
 timegrep_dependency()
 {
-  echo -e "Checking if timegrep is installed..."
-  if [ -f $TIMEGREP ]; then
-    echo -e "Timegrep is Installed!"
-  else
+  if [ -f !$TIMEGREP ]; then
     echo -e "Timegrep is not installed! 'sudo pip install timegrep' to install. Exiting..."
     exit
   fi
@@ -140,7 +128,9 @@ ip_specific_non_inter()
 # Usage information for enginx.
 usage()
 {
-  echo -e "\nusage: enginx [-Irishmx start_time end_time ip_addr date]
+  echo -e "\nA tool to output common information that is gathered when looking at nginx access logs.
+
+usage: enginx [-Irishmx start_time end_time ip_addr date]\n
 -I 					Turn on Interactive mode.
 -r start_time end_time date 		Returns count of unique page requests.
 -i start_time end_time date		Returns count of unique IPs.
@@ -197,9 +187,13 @@ interactive_mode()
 
 # Main progam application.
 
-#nginx_dependency
-#timegrep_dependency
 root_check
+#nginx_dependency
+timegrep_dependency
+
+if [ "$1" = "" ]; then
+	usage
+fi
 
 while [ "$1" != "" ]; do
   case $1 in

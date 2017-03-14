@@ -140,7 +140,20 @@ ip_specific_non_inter()
 # Usage information for enginx.
 usage()
 {
-  echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
+  echo -e "\nusage: enginx [-Irishmx start_time end_time ip_addr date]
+-I 					Turn on Interactive mode.
+-r start_time end_time date 		Returns count of unique page requests.
+-i start_time end_time date		Returns count of unique IPs.
+-s 					Returns nginx status.
+-h					Displays help.
+-m start_time end_time date		Returns count of unique methods.
+-x start_time end_time ip_addr date		Returns IP specific information.
+
+Formats to use for input:
+
+Date format: YYYY-MM-DD
+Time format: HH:MM:SS
+"
 }
 
 # When enabled, provides a different more appealing view mode.
@@ -209,7 +222,7 @@ while [ "$1" != "" ]; do
                               DATE=$3
                               requests_count ;;
 
-    -is )                     shift
+    -x )                      shift
                               START_TIME=$1
                               END_TIME=$2
                               IP=$3
@@ -220,8 +233,6 @@ while [ "$1" != "" ]; do
     -h | --help )             usage
                               exit
                               ;;
-#     * )                     usage
-#                             exit 1
   esac
   shift
 done

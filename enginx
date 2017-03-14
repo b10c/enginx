@@ -7,10 +7,17 @@
 		# nginx <- DONE
 		# timegrep.py <- DONE
 	# Make the interactive/standard switch
+		# Set up shift arguments for for non-ineracive menu
+			# IP count
+			# Other counts
+			# IP specific
 	# Get feedback for functionality
 	# Clean up repeating functions
 	# Lock down the path to access log <- DONE
-	# Sudo warning
+	# Sudo warning <- DONE
+		# Make this a check.
+	# Better time defaults (+/- 3 Hrs)
+	# Comment code
 
 ##### Constants
 
@@ -23,24 +30,32 @@ NGINX="/etc/init.d/nginx"
 TIMEGREP="/usr/local/bin/timegrep"
 ##### Functions
 
+warning()
+{
+	echo -e "\n********************** WARNING **********************"
+	echo -e "If not run as root, directory access might be denied."
+	echo -e "*****************************************************"
+	echo -e "$TITLE\n"
+}
+
 nginx_dependency()
 {
-	echo -e "Checking if nginx is installed...\n"
+	echo -e "Checking if nginx is installed..."
 	if [ -f $NGINX ]; then
-		echo -e "Nginx is Installed!\n"
+		echo -e "Nginx is Installed!"
 	else
-		echo -e "Nginx is not installed! Exiting...\n"
+		echo -e "Nginx is not installed! Exiting..."
 		exit
 	fi
 }
 
 timegrep_dependency()
 {
-	echo -e "Checking if timegrep is installed...\n"
+	echo -e "Checking if timegrep is installed..."
 	if [ -f $TIMEGREP ]; then
-		echo -e "Timegrep is Installed!\n"
+		echo -e "Timegrep is Installed!"
 	else
-		echo -e "Timegrep is not installed! 'sudo pip install timegrep' to install. Exiting...\n"
+		echo -e "Timegrep is not installed! 'sudo pip install timegrep' to install. Exiting..."
 		exit
 	fi
 }
@@ -104,10 +119,8 @@ usage()
 	echo "usage: enginx [[-d date] [-st start-time] [-et end-time] [-ip ip-addr] | [-h]]"
 }
 
-##### Main
-
-echo $TITLE
-
+interactive_mode()
+{
 start_time
 end_time
 current_date
@@ -139,4 +152,23 @@ case $selection in
 	0 ) exit ;;
 	* ) usage ;;
 esac
+done
+}
+
+##### Main
+
+#nginx_dependency
+timegrep_dependency
+warning
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-i | --interactive )	interactive_mode ;;
+		-h | --help )		usage
+					exit
+					;;
+		* )			usage
+					exit 1
+	esac
+	shift
 done
